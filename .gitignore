@@ -1,0 +1,32 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+venv/
+
+# Ignore environment files
+.env
+
+# Ignore OS files
+.DS_Store
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore build files
+build/
+dist/
+
+#mp4files
+*.mp4
+
+# images
+*.jpg
+
+#Ignore fames folders
+frames/
+
+# Ignore run folders
+run/
