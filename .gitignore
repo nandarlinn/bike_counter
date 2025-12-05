@@ -30,3 +30,6 @@ frames/
 
 # Ignore run folders
 run/
+
+# Ignore .pt
+*.pt
