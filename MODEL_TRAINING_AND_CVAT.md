@@ -32,11 +32,9 @@ This document explains how to build a bicycle detector dataset using **CVAT** (i
 ## CVAT: Create a Project + Labels
 
 1. Create a **Project** (recommended) so label definitions stay consistent.
-2. Add a label:
-   - `bicycle` (single class for this repo’s default logic)
-3. (Optional) Add extra labels if you plan multi-class training:
-   - `person`, `motorbike`, etc.
-
+2. Add labels:
+   - `bus`, `car`, `truck`,  `bike`,    `pedestrian`
+   
 > Note: This repo’s `bike_counter.py` currently filters detections by a single class id. If you train custom classes, you’ll need to align IDs accordingly.
 
 ## CVAT: Create a Task from Video (Best for Tracking)
