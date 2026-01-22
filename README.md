@@ -2,6 +2,10 @@
 
 A computer vision-based bike counting system that uses YOLOv9 object detection and ByteTrack tracking to count bicycles crossing predefined lines and zones in video frames.
 
+## Documentation
+
+- **Model training + CVAT annotation (with tracking)**: See `MODEL_TRAINING_AND_CVAT.md`
+
 ## Features
 
 - **Multi-zone counting**: Tracks bikes across three different counting zones:
