@@ -4,7 +4,7 @@ A computer vision-based bike counting system that uses YOLOv9 object detection a
 
 ## Documentation
 
-- **Model training + CVAT annotation (with tracking)**: See `MODEL_TRAINING_AND_CVAT.md`
+- **Model training + CVAT annotation (with tracking)**: See [`MODEL_TRAINING_AND_CVAT.md`](https://github.com/nandarlinn/bike_counter/blob/main/MODEL_TRAINING_AND_CVAT.md)
 
 ## Features
 
