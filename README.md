@@ -50,7 +50,6 @@ Download the YOLOv9-E model weights and place them in the `weights/` directory:
 
 - **Option 1**: Use the provided `yolov9e.pt` file (if available)
 - **Option 2**: Download from [Ultralytics YOLOv9 repository](https://github.com/ultralytics/ultralytics)
-- **Option 3**: Download custom trained weights from [fe8kv9 repository](https://github.com/tuansunday05/fe8kv9?tab=readme-ov-file) (yolov9-e-modify-trained.pt)
 
 The model file should be placed at: `weights/yolov9e.pt`
 
