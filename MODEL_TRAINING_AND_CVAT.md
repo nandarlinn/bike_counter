@@ -41,9 +41,7 @@ This document explains how to build a bicycle detector dataset using **CVAT** (i
 
 1. **Create task** → select **Video** upload (or link to cloud storage).
 2. Choose an image quality that preserves enough detail for bikes.
-3. Set frame step (optional):
-   - `1` (best accuracy, most work)
-   - `2` or `3` (less work, may miss fast motion)
+
 
 ## CVAT Tracking / Interpolation Workflow (Recommended)
 
