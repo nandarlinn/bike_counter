@@ -48,7 +48,7 @@ pip install -r requirements.txt
 
 Download the YOLOv9-E model weights and place them in the `weights/` directory:
 
-- **Option 1**: Use the provided `yolov9e.pt` file (if available)
+- **Option 1**: Use the custom model`yolov9e.pt` file.
 - **Option 2**: Download from [Ultralytics YOLOv9 repository](https://github.com/ultralytics/ultralytics)
 
 The model file should be placed at: `weights/yolov9e.pt`
