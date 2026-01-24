@@ -1,210 +1,319 @@
-# Model Training + CVAT Annotation (with Tracking)
+# CVAT Annotation Workflow Guide
 
-This document explains how to build a bicycle detector dataset using **CVAT** (including its **tracking** features), export labels, and train a YOLO model you can use with this repository.
+This README explains how to use **CVAT** to create projects, annotate data, and export annotations in **YOLO 1.1** format.
 
-## Goals
+---
 
-- **Annotate bicycles** efficiently in videos using **CVAT interpolation/tracking** tools.
-- **Export** annotations to a YOLO-compatible format.
-- **Train** a detector and place the resulting weights in `weights/` (e.g. `weights/yolov9e.pt`).
+## 1. Open CVAT
+- Open the CVAT web interface in your browser.
+- Log in with your account.
 
-## Prerequisites
+---
 
-- **CVAT** running (self-hosted or cloud).
-- A set of **videos** or **images** that match your target camera viewpoint (recommended).
-- A clear definition of what counts as a “bike” in your project (bicycle only vs bicycle + rider, etc.).
+## 2. Create a Project
+1. Go to **Projects**.
+2. Click **Create Project**.
+3. Fill in:
+   - **Project Name**
+   - **Add Labels** (e.g., Add labels: `bus`, `car`, `truck`,  `bike`,    `pedestrian`)
+4. Click **Submit & Continue**.
+5. Upload or link your dataset if required.
+6. Click **Submit & Continue** again.
 
-## Recommended Dataset Design
+✅ Project is now created.
 
-- **Source diversity**:
-  - Day / night
-  - Weather variations
-  - Different bike types (road, MTB, e-bike, cargo)
-  - Occlusions (groups, partial visibility)
-- **Split**:
-  - Train: ~70–80%
-  - Val: ~10–20%
-  - Test: ~10% (optional but recommended)
-- **Annotation unit**:
-  - If you count bikes, label **bicycle bounding boxes** (not riders).
-  - Keep boxes tight around the bicycle body and wheels when visible.
+---
 
-## CVAT: Create a Project + Labels
+## 3. Create a Task
+1. Open the **already created project**.
+2. Click **Create Task**.
+3. Fill in the task details:
+   - Task name
+   - Select the project
+   - Upload images or video
+4. Click **Submit**.
 
-1. Create a **Project** (recommended) so label definitions stay consistent.
-2. Add labels:
-   - `bus`, `car`, `truck`,  `bike`,    `pedestrian`
-   
-> Note: This repo’s `bike_counter.py` currently filters detections by a single class id. If you train custom classes, you’ll need to align IDs accordingly.
+---
 
-## CVAT: Create a Task from Video (Best for Tracking)
+## 4. Open Task & Start Annotation
+1. Open the task.
+2. You will see **Job #1**.
+3. Click **Job #1** to start annotation.
 
-1. **Create task** → select **Video** upload (or link to cloud storage).
-2. Choose an image quality that preserves enough detail for bikes.
+---
 
+## 5. Annotation Steps
 
-## CVAT Tracking / Interpolation Workflow (Recommended)
+### 5.1 Draw Bounding Boxes
+1. In the annotation panel:
+   - Click **Draw Rectangle**
+   - Choose the correct **Label** (car, truck, etc.)
+2. Set the drawing method to **By 2 Points**.
+3. Click **Track**.
+4. Draw a rectangle around the object.
 
-CVAT’s tracking features can dramatically reduce labeling time:
+---
 
-- **Track / Interpolate**:
-  - Annotate a bounding box on a key frame.
-  - Use CVAT’s **interpolation** across frames (linear) and adjust when it drifts.
-- **Keyframes**:
-  - Add keyframes whenever the bike changes direction, size, or is partially occluded.
-- **Occlusion handling**:
-  - If the bike is fully hidden, either stop the track and start a new one later, or mark frames as occluded (depending on your team convention).
+### 5.2 Using Track Efficiently
+- The **Track** function automatically propagates the bounding box to future frames.
+- You can:
+  - Skip **4–5 frames** using the **arrow keys**
+  - Adjust the bounding box on those frames if needed
 
-### Practical tips for stable tracks
+---
 
-- **Keep IDs consistent** for the same physical bike while visible (helps QA).
-- **Avoid “jumping boxes”**:
-  - When multiple bikes cross, confirm the track stays on the same bike.
-- **Tight boxes**:
-  - Avoid oversized boxes that include nearby objects; it reduces detector quality.
+### 5.3 Adjusting Annotations
+- After annotating one frame:
+  - Move forward **4–5 frames** and adjust the bounding box
+  - Go back to previous un-annotated frames
+  - Fix only **missing or incorrect annotations**
+- ❗ No need to re-annotate all labels
+- CVAT automatically interpolates bounding boxes
+- If a bounding box is very inaccurate, manually re-adjust it
 
-## Quality Assurance (QA) Checklist
+---
 
-Before exporting, do a QA pass:
+## 6. Frame Navigation
+- Use **arrow keys** to move between frames
+- Continue until **all images or frames are annotated**
 
-- **No missing bikes** in critical zones (near your counting lines/polygon).
-- **No double boxes** on a single bike (unless intentionally multi-class).
-- **Consistent label name** (e.g. always `bicycle`, not `bike`, `bicycles`, etc.).
-- **Box tightness** consistent across annotators.
+---
 
-## Exporting from CVAT to YOLO Format
+## 7. Export Annotations
+1. Go to **Tasks**
+2. Click **Export Annotation**
+3. Select export format:
+   - `YOLO 1.1`
+4. Enter the **Export Name**
+5. Click **Export**
 
-CVAT supports exporting in YOLO-like formats, but which one you choose depends on your training code.
+---
 
-### Option A: Export “YOLO” (images + txt labels)
+## 8. Completion
+🎉 Your dataset is now fully annotated and exported in **YOLO 1.1** format, ready for model training.
 
-- Export format: **YOLO 1.1** (or similar YOLO bbox export option in your CVAT version).
-- You should get:
-  - Images
-  - A `.txt` label file per image
+---
 
-Each label line typically looks like:
+# CVAT Annotation & YOLO Training Guide
 
-```
-<class_id> <x_center> <y_center> <width> <height>
-```
+This document explains the **full end-to-end workflow** for:
+- Annotating data using **CVAT**
+- Exporting annotations in **YOLO 1.1** format
+- Training an object detection model using **YOLO**
 
-All coordinates are **normalized** \([0, 1]\).
+---
 
-### Option B: Export COCO and convert to YOLO
+## 1. Open CVAT
+- Open the CVAT web interface in your browser.
+- Log in with your account.
 
-If your CVAT export is COCO JSON, you can convert to YOLO using common scripts (there are many).
-This can be more reliable than YOLO export depending on your CVAT version and pipeline.
+---
 
-## Dataset Layout (Recommended)
+## 2. Create a Project
+1. Go to **Projects**
+2. Click **Create Project**
+3. Fill in:
+   - **Project Name**
+   - **Labels** (e.g., `car`, `truck`, `bus`, etc.)
+4. Click **Submit & Continue**
+5. Upload or link your dataset if required
+6. Click **Submit & Continue** again
 
-Create a dataset directory like:
+✅ Project is now created.
 
-```
+---
+
+## 3. Create a Task
+1. Open the **already created project**
+2. Click **Create Task**
+3. Fill in:
+   - Task name
+   - Select the project
+   - Upload images or video
+4. Click **Submit**
+
+---
+
+## 4. Open Task & Start Annotation
+1. Open the task
+2. You will see **Job #1**
+3. Click **Job #1** to start annotation
+
+---
+
+## 5. Annotation Steps
+
+### 5.1 Draw Bounding Boxes
+1. In the annotation panel:
+   - Click **Draw Rectangle**
+   - Choose the correct **Label**
+2. Set drawing method to **By 2 Points**
+3. Click **Track**
+4. Draw a rectangle around the object (car, truck, etc.)
+
+---
+
+### 5.2 Using Track
+- **Track** automatically propagates bounding boxes to future frames
+- Skip **4–5 frames** using arrow keys
+- Adjust bounding boxes only where needed
+
+---
+
+### 5.3 Adjusting Annotations
+- After annotating one frame:
+  - Move forward 4–5 frames and adjust
+  - Go back to un-annotated frames
+  - Fix only missing or incorrect boxes
+- ❗ No need to re-annotate everything
+- CVAT interpolates boxes automatically
+- Redraw only if the box is completely wrong
+
+---
+
+## 6. Frame Navigation
+- Use **arrow keys** to move between frames
+- Continue until **all images or frames are annotated**
+
+---
+
+## 7. Export Annotations
+1. Go back to **Tasks**
+2. Click **Export Annotation**
+3. Select format:
+   - `YOLO 1.1`
+4. Enter **Export Name**
+5. Click **Export**
+
+---
+
+## 8. Annotator Tips for Speed & Accuracy
+
+### 8.1 Use Track Aggressively
+- Annotate one clean frame
+- Skip multiple frames
+- Adjust instead of redraw
+
+---
+
+### 8.2 Adjust, Don’t Redraw
+- Resize or move boxes when possible
+- Redraw only when boxes drift too far
+
+---
+
+### 8.3 Skip Frames Smartly
+- Skip smooth motion
+- Focus on turns, occlusions, sudden motion
+
+---
+
+### 8.4 Keep Boxes Tight
+- Cover the object fully
+- Avoid extra background
+
+---
+
+### 8.5 Label Consistency
+- Same object = same label across frames
+- Never switch class types
+
+---
+
+### 8.6 Occlusion Handling
+- Partially visible → annotate visible part
+- Fully disappeared → stop tracking
+- Resume when object reappears
+
+---
+
+### 8.7 Zoom for Precision
+- Zoom in for small objects
+- Avoid large inaccurate boxes
+
+---
+
+### 8.8 Review Before Export
+Check for:
+- Missing labels
+- Wrong classes
+- Box drifting
+
+---
+
+### 8.9 Speed vs Quality Rule
+- Fast + consistent > slow + perfect
+- Missing labels are worse than small box errors
+
+---
+
+## 9. Training the Model (YOLO)
+
+This section explains how to train an object detection model using exported CVAT annotations.
+
+---
+
+## 9.1 Exported Dataset Structure
+After exporting from CVAT (YOLO 1.1):
+
 dataset/
-  images/
-    train/
-    val/
-  labels/
-    train/
-    val/
-```
+├── images/
+│ ├── img_001.jpg
+│ ├── img_002.jpg
+│ └── ...
+├── labels/
+│ ├── img_001.txt
+│ ├── img_002.txt
+│ └── ...
+└── classes.txt
 
-If you exported everything into one folder, you’ll need to split it into train/val and move corresponding label files.
+## 9.2 YOLO Label Format
+Each `.txt` file contains:
+<class_id> <x_center> <y_center> <width> <height>
 
-## Training a YOLO Model
 
-This repository contains model definitions under `models/`, but training entrypoints vary by YOLO implementation.
-Because different forks/tools have different CLI commands, here is a **general** training checklist that works regardless of which trainer you use:
+- Values are normalized (0–1)
+- One line per object
+- `class_id` must match `classes.txt`
 
-### 1) Define your classes
+---
 
-- For single-class bike detection:
-  - `nc: 1`
-  - `names: [bicycle]`
+## 9.3 Split Dataset
+Recommended split:
+- 80% training
+- 20% validation
 
-### 2) Create a dataset YAML
+Example structure:
 
-Create something like `data/bikes.yaml` (example):
+dataset/
+├── train/
+│ ├── images/
+│ └── labels/
+├── val/
+│ ├── images/
+│ └── labels/
+└── classes.txt
+
+
+---
+
+## 9.4 Create `data.yaml`
+Example:
 
 ```yaml
-path: /absolute/path/to/dataset
-train: images/train
-val: images/val
-
-nc: 1
-names: [bicycle]
+path: dataset
+train: train/images
+val: val/images
 ```
+names:
+  0: bus
+  1: car
+  2: truck
+  3: bike
+  4: pedestrian
 
-### 3) Train
 
-Run training using your chosen YOLO trainer (Ultralytics or your YOLOv9 training repo).
-Make sure you:
-
-- Use an image size appropriate for your camera (e.g. 640/960/1280)
-- Enable augmentation (default usually OK)
-- Track metrics on the validation set
-
-### 4) Export weights
-
-When training completes, export or copy the best checkpoint to:
-
+9.5 Train YOLO Model
 ```
-weights/yolov9e.pt
+yolo train model=yolo9e.pt data=data.yaml epochs=100 imgsz=640
 ```
-
-Then update `bike_counter.py` if your filename differs:
-
-- `MODEL_PATH = "weights/your_file.pt"`
-
-## Aligning Class IDs with `bike_counter.py`
-
-`bike_counter.py` filters detections by `BIKE_CLASS_ID`.
-
-- If you train a **single-class** model where `bicycle` is class 0, set:
-  - `BIKE_CLASS_ID = 0`
-- If you use COCO-pretrained classes (where `bicycle` is often class 1–3 depending on the model), keep it consistent with your model’s class map.
-
-## Using CVAT Tracking Annotations (If You Need Track IDs)
-
-Training a detector typically **does not require track IDs**—only per-frame bounding boxes.
-However, CVAT tracks are useful for:
-
-- Faster labeling via interpolation
-- QA (consistent identity over time)
-- (Optional) training a dedicated tracker / ReID model later
-
-If your export format includes per-object track IDs, most YOLO detection trainers will simply ignore them.
-
-## Evaluation Tips (Bike Counting Use-Case)
-
-If your goal is accurate counting at lines/polygons (not just mAP), include a targeted validation set:
-
-- Bikes close to the counting lines
-- Bikes partially occluded
-- Crowded scenes
-- Motion blur
-
-Then visually check:
-
-- False positives near the gate/lines (these inflate counts)
-- Missed bikes (these reduce counts)
-
-## Optional: Extract Frames from Video (for CVAT or for Training)
-
-If you start from videos, you can extract frames with `ffmpeg`:
-
-```bash
-mkdir -p frames
-ffmpeg -i input.mp4 -vf fps=15 frames/%06d.jpg
-```
-
-Then upload the extracted images to CVAT (image task), or use them directly for training.
-
-## Common Pitfalls
-
-- **Wrong class id** in `bike_counter.py` → no bikes counted.
-- **Loose boxes** → detector learns background, increases false positives.
-- **Not enough negative examples** (no bikes) → higher false positive rate.
-- **Train/val leakage** (same scene in both) → metrics look good but fail in production.
-
