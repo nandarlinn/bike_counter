@@ -1,6 +1,9 @@
-# CVAT Annotation Workflow Guide
+# CVAT Annotation & YOLO Training Guide
 
-This README explains how to use **CVAT** to create projects, annotate data, and export annotations in **YOLO 1.1** format.
+This document explains the **full end-to-end workflow** for:
+- Annotating data using **CVAT**
+- Exporting annotations in **YOLO 1.1** format
+- Training an object detection model using **YOLO**
 
 ---
 
@@ -21,6 +24,7 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
 6. Click **Submit & Continue** again.
 
 ✅ Project is now created.
+![Create Project](images/1.png)
 
 ---
 
@@ -32,6 +36,7 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
    - Select the project
    - Upload images or video
 4. Click **Submit**.
+![Create Task](images/2.png)
 
 ---
 
@@ -39,7 +44,7 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
 1. Open the task.
 2. You will see **Job #1**.
 3. Click **Job #1** to start annotation.
-
+![Open Task](images/3.png)
 ---
 
 ## 5. Annotation Steps
@@ -48,10 +53,12 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
 1. In the annotation panel:
    - Click **Draw Rectangle**
    - Choose the correct **Label** (car, truck, etc.)
+![Choose Label](images/4.png)
 2. Set the drawing method to **By 2 Points**.
 3. Click **Track**.
 4. Draw a rectangle around the object.
-
+![Choose Method](images/5.png)
+![Annotate Object](images/6.png)
 ---
 
 ### 5.2 Using Track Efficiently
@@ -65,9 +72,9 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
 ### 5.3 Adjusting Annotations
 - After annotating one frame:
   - Move forward **4–5 frames** and adjust the bounding box
-  - Go back to previous un-annotated frames
+  - Go back to previous skipped frames
   - Fix only **missing or incorrect annotations**
-- ❗ No need to re-annotate all labels
+- ❗ No need to re-adjust all labels
 - CVAT automatically interpolates bounding boxes
 - If a bounding box is very inaccurate, manually re-adjust it
 
@@ -82,108 +89,14 @@ This README explains how to use **CVAT** to create projects, annotate data, and 
 ## 7. Export Annotations
 1. Go to **Tasks**
 2. Click **Export Annotation**
-3. Select export format:
+![Export Annotation1](images/7.png)
+4. Select export format:
    - `YOLO 1.1`
-4. Enter the **Export Name**
-5. Click **Export**
+5. Enter the **Export Name**
+6. Click **Export**
+![Export Annotation2](images/8.png)
 
----
-
-## 8. Completion
 🎉 Your dataset is now fully annotated and exported in **YOLO 1.1** format, ready for model training.
-
----
-
-# CVAT Annotation & YOLO Training Guide
-
-This document explains the **full end-to-end workflow** for:
-- Annotating data using **CVAT**
-- Exporting annotations in **YOLO 1.1** format
-- Training an object detection model using **YOLO**
-
----
-
-## 1. Open CVAT
-- Open the CVAT web interface in your browser.
-- Log in with your account.
-
----
-
-## 2. Create a Project
-1. Go to **Projects**
-2. Click **Create Project**
-3. Fill in:
-   - **Project Name**
-   - **Labels** (e.g., `car`, `truck`, `bus`, etc.)
-4. Click **Submit & Continue**
-5. Upload or link your dataset if required
-6. Click **Submit & Continue** again
-
-✅ Project is now created.
-
----
-
-## 3. Create a Task
-1. Open the **already created project**
-2. Click **Create Task**
-3. Fill in:
-   - Task name
-   - Select the project
-   - Upload images or video
-4. Click **Submit**
-
----
-
-## 4. Open Task & Start Annotation
-1. Open the task
-2. You will see **Job #1**
-3. Click **Job #1** to start annotation
-
----
-
-## 5. Annotation Steps
-
-### 5.1 Draw Bounding Boxes
-1. In the annotation panel:
-   - Click **Draw Rectangle**
-   - Choose the correct **Label**
-2. Set drawing method to **By 2 Points**
-3. Click **Track**
-4. Draw a rectangle around the object (car, truck, etc.)
-
----
-
-### 5.2 Using Track
-- **Track** automatically propagates bounding boxes to future frames
-- Skip **4–5 frames** using arrow keys
-- Adjust bounding boxes only where needed
-
----
-
-### 5.3 Adjusting Annotations
-- After annotating one frame:
-  - Move forward 4–5 frames and adjust
-  - Go back to un-annotated frames
-  - Fix only missing or incorrect boxes
-- ❗ No need to re-annotate everything
-- CVAT interpolates boxes automatically
-- Redraw only if the box is completely wrong
-
----
-
-## 6. Frame Navigation
-- Use **arrow keys** to move between frames
-- Continue until **all images or frames are annotated**
-
----
-
-## 7. Export Annotations
-1. Go back to **Tasks**
-2. Click **Export Annotation**
-3. Select format:
-   - `YOLO 1.1`
-4. Enter **Export Name**
-5. Click **Export**
 
 ---
 
@@ -255,7 +168,7 @@ This section explains how to train an object detection model using exported CVAT
 
 ## 9.1 Exported Dataset Structure
 After exporting from CVAT (YOLO 1.1):
-
+```
 dataset/
 ├── images/
 │ ├── img_001.jpg
@@ -266,6 +179,7 @@ dataset/
 │ ├── img_002.txt
 │ └── ...
 └── classes.txt
+```
 
 ## 9.2 YOLO Label Format
 Each `.txt` file contains:
@@ -284,7 +198,7 @@ Recommended split:
 - 20% validation
 
 Example structure:
-
+```
 dataset/
 ├── train/
 │ ├── images/
@@ -293,27 +207,26 @@ dataset/
 │ ├── images/
 │ └── labels/
 └── classes.txt
-
-
+```
 ---
 
 ## 9.4 Create `data.yaml`
 Example:
 
-```yaml
+```
 path: dataset
 train: train/images
 val: val/images
-```
+
 names:
   0: bus
   1: car
   2: truck
   3: bike
   4: pedestrian
-
-
-9.5 Train YOLO Model
 ```
-yolo train model=yolo9e.pt data=data.yaml epochs=100 imgsz=640
+
+## 9.5 Train YOLO Model
+```
+yolo task=detect mode=train model=yolov9e.pt data=data.yaml epochs=40 imgsz=640 batch=5
 ```
