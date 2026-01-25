@@ -56,8 +56,8 @@ This document explains the **full end-to-end workflow** for:
 ![Choose Label](images/4.png)
 2. Set the drawing method to **By 2 Points**.
 3. Click **Track**.
-4. Draw a rectangle around the object.
 ![Choose Method](images/5.png)
+5. Draw a rectangle around the object.
 ![Annotate Object](images/6.png)
 ---
 
